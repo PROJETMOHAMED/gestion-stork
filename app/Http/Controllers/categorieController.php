@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Validation\Rule;
 
 use App\Http\Controllers\Controller;
 use App\Models\activites;
@@ -137,7 +138,12 @@ class CategorieController extends Controller
     public function update(Request $request, Categories $categorie)
     {
         $validatedData = $request->validate([
-            'nom' => 'required|min:3|string|unique:categories,nom' . $categorie->id,
+            'nom' => [
+                'required',
+                'min:3',
+                'string',
+                Rule::unique('categories', 'nom')->ignore($categorie->id),
+            ],
         ]);
         if (stristr($validatedData['nom'], 'Autre')) {
             return redirect()->back()->with('error', 'choisi un autre nom');
